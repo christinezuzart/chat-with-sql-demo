@@ -1,5 +1,5 @@
 import streamlit as st
-from streaming import StreamHandler
+from streaming import StreamingChatCallbackHandler
 
 # from urllib.parse import quote_plus
 from langchain.utilities import SQLDatabase
@@ -19,10 +19,7 @@ if "messages" not in st.session_state:
 
 @st.cache_resource
 def get_llm():
-    # st_cb = StreamHandler(st.empty())
-    # callback_manager = CallbackManager([st_cb])
-
-    callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+    callback_manager = CallbackManager([StreamingChatCallbackHandler()])
 
     llm = LlamaCpp(
         model_path=r".\models\llama-2-7b.Q4_K_M.gguf",
@@ -82,5 +79,5 @@ if (
             response = sql_query_chain.invoke(
                 {"question": st.session_state["messages"][-1]["content"]}
             )
-            st.write(response)
+
             st.session_state.messages.append({"role": "assistant", "content": response})
